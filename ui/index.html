@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Text Token Extractor</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#ffffff;
+  --bg2:#f5f5f5;
+  --bg3:#ebebeb;
+  --bg4:#e0e0e0;
+  --on-bg:#1e1e1e;
+  --on-bg2:#666666;
+  --on-bg3:#999999;
+  --border:rgba(0,0,0,0.12);
+  --border2:rgba(0,0,0,0.20);
+  --hover:rgba(0,0,0,0.05);
+  --blue:#0d99ff;
+  --blue-c:rgba(13,153,255,0.11);
+  --blue-t:#0a6fbb;
+  --success:#14ae5c;
+  --success-c:rgba(20,174,92,0.10);
+  --success-b:rgba(20,174,92,0.30);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root{
+    --bg:#2c2c2c;
+    --bg2:#383838;
+    --bg3:#1e1e1e;
+    --bg4:#484848;
+    --on-bg:#e5e5e5;
+    --on-bg2:#b3b3b3;
+    --on-bg3:#757575;
+    --border:rgba(255,255,255,0.10);
+    --border2:rgba(255,255,255,0.18);
+    --hover:rgba(255,255,255,0.06);
+    --blue-c:rgba(13,153,255,0.16);
+    --blue-t:#5bc0ff;
+  }
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  background: var(--bg);
+  color: var(--on-bg);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+.empty {
+  flex: 1;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.empty-text { font-size: 11px; color: var(--on-bg2); line-height: 1.5; }
+.empty-hint { font-size: 10px; color: var(--on-bg3); }
+
+.token-header {
+  height: 28px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg2);
+  border-bottom: 0.5px solid var(--border);
+  flex-shrink: 0;
+}
+
+.token-layer {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--on-bg2);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.token-badge {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--blue-t);
+  background: var(--blue-c);
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 120ms;
+}
+
+.token-badge:hover {
+  background: rgba(13,153,255,0.22);
+}
+
+.token-badge.ok {
+  color: var(--success);
+  background: var(--success-c);
+}
+
+.tokens-scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.token-section {
+  border-bottom: 2px solid var(--bg3);
+}
+
+.token-section:last-child {
+  border-bottom: none;
+}
+
+
+.modes-grid {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+}
+
+.mrow {
+  display: contents;
+}
+
+.mrow:last-child > .mtag,
+.mrow:last-child > .mval,
+.mrow:last-child > .copy-btn { border-bottom: none; }
+
+.mtag {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8px;
+  min-height: 32px;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--on-bg3);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.7;
+  border-bottom: 0.5px solid var(--border);
+  border-right: 0.5px solid var(--border);
+  transition: background 80ms;
+}
+
+.mval {
+  min-width: 0;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: var(--on-bg);
+  word-break: break-word;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  transition: background 80ms;
+}
+
+.mrow { cursor: pointer; }
+.mrow:hover > .mtag,
+.mrow:hover > .mval,
+.mrow:hover > .copy-btn { background: var(--hover); }
+
+.copy-btn {
+  width: 26px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-bottom: 0.5px solid var(--border);
+  color: var(--on-bg3);
+  transition: all 120ms;
+  padding-right: 6px;
+}
+
+.copy-btn:hover {
+  color: var(--blue);
+  border-color: var(--border2);
+  background: var(--blue-c);
+}
+
+.copy-btn.ok {
+  color: var(--success);
+  border-color: var(--success-b);
+  background: var(--success-c);
+}
+
+.toast {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: var(--bg);
+  border: 0.5px solid var(--border2);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--success);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms, transform 150ms;
+  white-space: nowrap;
+  z-index: 3;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.nav-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--on-bg3);
+  transition: all 120ms;
+  padding: 0;
+}
+
+.nav-btn:hover {
+  color: var(--blue);
+  background: var(--blue-c);
+}
+
+.footer {
+  height: 28px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 0.5px solid var(--border);
+  background: var(--bg2);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.footer a {
+  font-size: 10px;
+  color: var(--on-bg3);
+  text-decoration: none;
+  transition: color 120ms;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer a:hover { color: var(--blue-t); }
+
+.resize-handle {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+  z-index: 10;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid var(--on-bg3);
+  border-bottom: 1.5px solid var(--on-bg3);
+  opacity: 0.5;
+}
+
+</style>
+</head>
+<body>
+
+<div class="body">
+  <div id="content" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;"></div>
+<div class="toast" id="toast">Copied</div>
+</div>
+
+<div class="resize-handle" id="resizeHandle"></div>
+<div class="footer">
+  <a href="https://blakewonka.com" target="_blank">
+    blakewonka.com
+  </a>
+</div>
+
+<script>
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showEmpty(text, hint) {
+  document.getElementById('content').innerHTML = `
+    <div class="empty">
+      <p class="empty-text">${esc(text)}</p>
+      <span class="empty-hint">${esc(hint)}</span>
+    </div>`;
+}
+
+function copyText(text) {
+  try { navigator.clipboard.writeText(text); } catch {
+    const ta = document.createElement('textarea'); ta.value = text;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+
+function showAllTokens(tokens) {
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="tokens-scroll" id="tokensList">
+      ${tokens.map((data, i) => `
+        <div class="token-section">
+          <div class="token-header">
+            <span class="token-layer">${esc(data.layer)}</span>
+            <span class="token-badge" data-v="${esc(data.token)}">${esc(data.token)}</span>
+          </div>
+          <div class="modes-grid">
+            ${data.modes.map(m => `
+              <div class="mrow">
+                <div class="mtag">${esc(m.name)}</div>
+                <div class="mval">${esc(m.value || '—')}</div>
+                <button class="copy-btn" data-v="${esc(m.value)}" title="Copy">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                    <rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M1 8V2.5A1.5 1.5 0 0 1 2.5 1H8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  const list = document.getElementById('tokensList');
+
+  content.querySelectorAll('.token-badge').forEach(badge => {
+    badge.addEventListener('click', function() {
+      copyText(this.dataset.v);
+      this.classList.add('ok');
+      setTimeout(() => this.classList.remove('ok'), 900);
+      showToast('Copied');
+    });
+  });
+
+
+  content.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      copyText(btn.dataset.v);
+      btn.classList.add('ok');
+      setTimeout(() => btn.classList.remove('ok'), 900);
+      showToast('Copied');
+    });
+  });
+
+  content.querySelectorAll('.mrow').forEach(row => {
+    row.addEventListener('click', () => {
+      const el = row.querySelector('.mval');
+      const val = el && el.textContent ? el.textContent.trim() : null;
+      if (val && val !== '—') {
+        copyText(val);
+        showToast('Copied');
+      }
+    });
+  });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
+}
+
+window.onmessage = (event) => {
+  const msg = event.data.pluginMessage;
+  if (!msg) return;
+  switch (msg.type) {
+    case 'NO_SELECTION':
+      showEmpty('Select a text layer with a token', 'Works with text instances and frames');
+      break;
+    case 'NO_TOKEN':
+      showEmpty('No variable token found', 'The selected layer has no bound text variable');
+      break;
+    case 'ALL_TOKENS':
+      showAllTokens(msg.payload);
+      break;
+    case 'NAVIGATE_FAIL':
+      showToast('Main component not found');
+      break;
+  }
+};
+
+showEmpty('Select a text layer with a token', 'Works with text instances and frames');
+
+(function() {
+  var handle = document.getElementById('resizeHandle');
+  var startX, startY, startW, startH;
+  handle.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    startX = e.clientX;
+    startY = e.clientY;
+    startW = window.innerWidth;
+    startH = window.innerHeight;
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', onUp);
+  });
+  function onDrag(e) {
+    var w = Math.max(500, startW + (e.clientX - startX));
+    var h = Math.max(320, startH + (e.clientY - startY));
+    parent.postMessage({ pluginMessage: { type: 'RESIZE', width: w, height: h } }, '*');
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', onUp);
+  }
+})();
+
+</script>
+</body>
+</html>
