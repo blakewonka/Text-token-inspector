@@ -24,6 +24,13 @@
   --success:#14ae5c;
   --success-c:rgba(20,174,92,0.10);
   --success-b:rgba(20,174,92,0.30);
+  /* toast */
+  --toast-bg:#d4edda;
+  --toast-text:#155724;
+  /* badge */
+  --badge-bg:#dce8f0;
+  --badge-text:#1a6fa0;
+  --badge-hover:#c6d9e8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,6 +47,13 @@
     --hover:rgba(255,255,255,0.06);
     --blue-c:rgba(13,153,255,0.16);
     --blue-t:#5bc0ff;
+    /* toast */
+    --toast-bg:#13AE5C;
+    --toast-text:#00411E;
+    /* badge */
+    --badge-bg:#364E64;
+    --badge-text:#5CC0FF;
+    --badge-hover:#2e4456;
   }
 }
 
@@ -111,8 +125,8 @@ body {
 .token-badge {
   font-size: 10px;
   font-weight: 500;
-  color: var(--blue-t);
-  background: var(--blue-c);
+  color: var(--badge-text);
+  background: var(--badge-bg);
   padding: 1px 6px;
   border-radius: 4px;
   white-space: nowrap;
@@ -125,12 +139,12 @@ body {
 }
 
 .token-badge:hover {
-  background: rgba(13,153,255,0.22);
+  background: var(--badge-hover);
 }
 
 .token-badge.ok {
-  color: var(--success);
-  background: var(--success-c);
+  color: var(--toast-text);
+  background: var(--toast-bg);
 }
 
 .tokens-scroll {
@@ -228,13 +242,13 @@ body {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%) translateY(0);
-  background: var(--bg);
-  border: 0.5px solid var(--border2);
+  background: var(--toast-bg);
+  border: none;
   border-radius: 8px;
   padding: 5px 12px;
   font-size: 10px;
   font-weight: 500;
-  color: var(--success);
+  color: var(--toast-text);
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms, transform 150ms;
@@ -273,7 +287,7 @@ body {
   padding: 0 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   border-top: 0.5px solid var(--border);
   background: var(--bg2);
   flex-shrink: 0;
@@ -292,6 +306,28 @@ body {
 }
 
 .footer a:hover { color: var(--blue-t); }
+
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--on-bg3);
+  cursor: pointer;
+  user-select: none;
+  transition: color 120ms;
+}
+
+.mode-toggle:hover { color: var(--on-bg2); }
+
+.mode-toggle input[type="checkbox"] {
+  width: 11px;
+  height: 11px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--blue);
+  flex-shrink: 0;
+}
 
 .resize-handle {
   position: fixed;
@@ -326,6 +362,9 @@ body {
 
 <div class="resize-handle" id="resizeHandle"></div>
 <div class="footer">
+  <label class="mode-toggle">
+    <input type="checkbox" id="modeToggle"> Enable mode view
+  </label>
   <a href="https://blakewonka.com" target="_blank">
     blakewonka.com
   </a>
@@ -389,7 +428,6 @@ function showAllTokens(tokens) {
     });
   });
 
-
   content.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -410,6 +448,15 @@ function showAllTokens(tokens) {
       }
     });
   });
+
+  applyModeVisibility();
+}
+
+let modeViewEnabled = false;
+
+function applyModeVisibility() {
+  const grids = document.querySelectorAll('.modes-grid');
+  grids.forEach(g => { g.style.display = modeViewEnabled ? 'grid' : 'none'; });
 }
 
 let toastTimer;
@@ -441,6 +488,11 @@ window.onmessage = (event) => {
 };
 
 showEmpty('Select a text layer with a token', 'Works with text instances and frames');
+
+document.getElementById('modeToggle').addEventListener('change', function() {
+  modeViewEnabled = this.checked;
+  applyModeVisibility();
+});
 
 (function() {
   var handle = document.getElementById('resizeHandle');
