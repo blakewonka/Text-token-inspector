@@ -7,56 +7,6 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-:root{
-  --bg:#ffffff;
-  --bg2:#f5f5f5;
-  --bg3:#ebebeb;
-  --bg4:#e0e0e0;
-  --on-bg:#1e1e1e;
-  --on-bg2:#666666;
-  --on-bg3:#999999;
-  --border:rgba(0,0,0,0.12);
-  --border2:rgba(0,0,0,0.20);
-  --hover:rgba(0,0,0,0.05);
-  --blue:#0d99ff;
-  --blue-c:rgba(13,153,255,0.11);
-  --blue-t:#0a6fbb;
-  --success:#14ae5c;
-  --success-c:rgba(20,174,92,0.10);
-  --success-b:rgba(20,174,92,0.30);
-  /* toast */
-  --toast-bg:#d4edda;
-  --toast-text:#155724;
-  /* badge */
-  --badge-bg:#dce8f0;
-  --badge-text:#1a6fa0;
-  --badge-hover:#c6d9e8;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root{
-    --bg:#2c2c2c;
-    --bg2:#383838;
-    --bg3:#1e1e1e;
-    --bg4:#484848;
-    --on-bg:#e5e5e5;
-    --on-bg2:#b3b3b3;
-    --on-bg3:#757575;
-    --border:rgba(255,255,255,0.10);
-    --border2:rgba(255,255,255,0.18);
-    --hover:rgba(255,255,255,0.06);
-    --blue-c:rgba(13,153,255,0.16);
-    --blue-t:#5bc0ff;
-    /* toast */
-    --toast-bg:#13AE5C;
-    --toast-text:#00411E;
-    /* badge */
-    --badge-bg:#364E64;
-    --badge-text:#5CC0FF;
-    --badge-hover:#2e4456;
-  }
-}
-
 html, body {
   width: 100%;
   height: 100%;
@@ -66,8 +16,8 @@ html, body {
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 11px;
-  background: var(--bg);
-  color: var(--on-bg);
+  background: var(--figma-color-bg);
+  color: var(--figma-color-text);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -75,7 +25,7 @@ body {
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--figma-color-border-strong); border-radius: 4px; }
 
 .body {
   flex: 1;
@@ -97,55 +47,8 @@ body {
   text-align: center;
 }
 
-.empty-text { font-size: 11px; color: var(--on-bg2); line-height: 1.5; }
-.empty-hint { font-size: 10px; color: var(--on-bg3); }
-
-.token-header {
-  height: 28px;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg2);
-  border-bottom: 0.5px solid var(--border);
-  flex-shrink: 0;
-}
-
-.token-layer {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--on-bg2);
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.token-badge {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--badge-text);
-  background: var(--badge-bg);
-  padding: 1px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-  max-width: 130px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: all 120ms;
-}
-
-.token-badge:hover {
-  background: var(--badge-hover);
-}
-
-.token-badge.ok {
-  color: var(--toast-text);
-  background: var(--toast-bg);
-}
+.empty-text { font-size: 11px; color: var(--figma-color-text-secondary); line-height: 1.5; }
+.empty-hint { font-size: 11px; color: var(--figma-color-text-tertiary); }
 
 .tokens-scroll {
   flex: 1;
@@ -154,17 +57,151 @@ body {
 }
 
 .token-section {
-  border-bottom: 2px solid var(--bg3);
+  padding: 8px;
+  border-bottom: 1px solid var(--figma-color-border);
 }
 
 .token-section:last-child {
   border-bottom: none;
 }
 
+.card-container {
+  border: 1px solid var(--figma-color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
 
+/* Card header: layer name + chevron */
+.card-header {
+  height: 32px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--figma-color-bg-secondary);
+  border-bottom: 1px solid var(--figma-color-border);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 80ms;
+}
+
+.card-header:hover {
+  background: var(--figma-color-bg-hover);
+}
+
+.card-header:active {
+  background: var(--figma-color-bg-tertiary);
+}
+
+.card-header.open {
+  background: var(--figma-color-bg-hover);
+}
+
+.token-layer {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--figma-color-text-secondary);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chevron-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--figma-color-icon-tertiary);
+  transition: color 120ms;
+  padding: 0;
+}
+
+.chevron-btn svg {
+  transition: transform 200ms;
+}
+
+.chevron-btn.open svg {
+  transform: rotate(180deg);
+}
+
+/* Token ID row — always visible, larger and copy-friendly */
+.token-id-row {
+  min-height: 40px;
+  padding: 0 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid var(--figma-color-border);
+  background: transparent;
+  transition: background 80ms;
+  cursor: pointer;
+}
+
+.token-id-row:hover {
+  background: var(--figma-color-bg-hover);
+}
+
+.token-id-row:active {
+  background: var(--figma-color-bg-tertiary);
+}
+
+.token-id-text {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 0;
+}
+
+.token-id-badge {
+  display: inline-block;
+  background: var(--figma-color-bg-brand);
+  color: var(--figma-color-text-onbrand);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.token-id-copy {
+  width: 32px;
+  min-height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--figma-color-icon-tertiary);
+  transition: color 120ms;
+  padding: 0;
+}
+
+.token-id-row:hover .token-id-copy {
+  color: var(--figma-color-icon);
+}
+
+.token-id-copy.ok {
+  color: var(--figma-color-icon);
+}
+
+/* Modes grid */
 .modes-grid {
-  display: grid;
+  display: none;
   grid-template-columns: 80px 1fr auto;
+}
+
+.modes-grid.open {
+  display: grid;
 }
 
 .mrow {
@@ -175,21 +212,21 @@ body {
 .mrow:last-child > .mval,
 .mrow:last-child > .copy-btn { border-bottom: none; }
 
+.mrow:hover > .mtag,
+.mrow:hover > .mval,
+.mrow:hover > .copy-btn { background: var(--figma-color-bg-hover); }
+
 .mtag {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   padding: 0 8px;
   min-height: 32px;
-  font-size: 9px;
-  font-weight: 500;
-  color: var(--on-bg3);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--figma-color-text-tertiary);
   white-space: nowrap;
-  opacity: 0.7;
-  border-bottom: 0.5px solid var(--border);
-  border-right: 0.5px solid var(--border);
+  border-bottom: 1px solid var(--figma-color-border);
+  border-right: 1px solid var(--figma-color-border);
   transition: background 80ms;
 }
 
@@ -197,21 +234,16 @@ body {
   min-width: 0;
   padding: 6px 8px;
   font-size: 11px;
-  color: var(--on-bg);
+  color: var(--figma-color-text);
   word-break: break-word;
-  border-bottom: 0.5px solid var(--border);
+  border-bottom: 1px solid var(--figma-color-border);
   display: flex;
   align-items: center;
   transition: background 80ms;
 }
 
-.mrow { cursor: pointer; }
-.mrow:hover > .mtag,
-.mrow:hover > .mval,
-.mrow:hover > .copy-btn { background: var(--hover); }
-
 .copy-btn {
-  width: 26px;
+  width: 32px;
   min-height: 32px;
   display: flex;
   align-items: center;
@@ -219,22 +251,19 @@ body {
   cursor: pointer;
   background: transparent;
   border: none;
-  border-bottom: 0.5px solid var(--border);
-  color: var(--on-bg3);
-  transition: all 120ms;
-  padding-right: 6px;
+  border-bottom: 1px solid var(--figma-color-border);
+  color: var(--figma-color-icon-tertiary);
+  transition: background 120ms, color 120ms;
+  padding: 0;
 }
 
 .copy-btn:hover {
-  color: var(--blue);
-  border-color: var(--border2);
-  background: var(--blue-c);
+  color: var(--figma-color-icon-brand);
+  background: var(--figma-color-bg-hover);
 }
 
 .copy-btn.ok {
-  color: var(--success);
-  border-color: var(--success-b);
-  background: var(--success-c);
+  color: var(--figma-color-text-brand);
 }
 
 .toast {
@@ -242,13 +271,13 @@ body {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%) translateY(0);
-  background: var(--toast-bg);
+  background: var(--figma-color-bg-brand);
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 5px 12px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
-  color: var(--toast-text);
+  color: var(--figma-color-text-onbrand);
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms, transform 150ms;
@@ -261,43 +290,22 @@ body {
   transform: translateX(-50%) translateY(-8px);
 }
 
-.nav-btn {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  color: var(--on-bg3);
-  transition: all 120ms;
-  padding: 0;
-}
-
-.nav-btn:hover {
-  color: var(--blue);
-  background: var(--blue-c);
-}
-
 .footer {
-  height: 28px;
-  padding: 0 10px;
+  height: 32px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border-top: 0.5px solid var(--border);
-  background: var(--bg2);
+  justify-content: center;
+  border-top: 1px solid var(--figma-color-border);
+  background: var(--figma-color-bg-secondary);
   flex-shrink: 0;
   position: relative;
   z-index: 2;
 }
 
 .footer a {
-  font-size: 10px;
-  color: var(--on-bg3);
+  font-size: 11px;
+  color: var(--figma-color-text-tertiary);
   text-decoration: none;
   transition: color 120ms;
   display: flex;
@@ -305,29 +313,7 @@ body {
   gap: 4px;
 }
 
-.footer a:hover { color: var(--blue-t); }
-
-.mode-toggle {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  color: var(--on-bg3);
-  cursor: pointer;
-  user-select: none;
-  transition: color 120ms;
-}
-
-.mode-toggle:hover { color: var(--on-bg2); }
-
-.mode-toggle input[type="checkbox"] {
-  width: 11px;
-  height: 11px;
-  margin: 0;
-  cursor: pointer;
-  accent-color: var(--blue);
-  flex-shrink: 0;
-}
+.footer a:hover { color: var(--figma-color-text-brand); }
 
 .resize-handle {
   position: fixed;
@@ -346,8 +332,8 @@ body {
   right: 2px;
   width: 6px;
   height: 6px;
-  border-right: 1.5px solid var(--on-bg3);
-  border-bottom: 1.5px solid var(--on-bg3);
+  border-right: 1.5px solid var(--figma-color-icon-tertiary);
+  border-bottom: 1.5px solid var(--figma-color-icon-tertiary);
   opacity: 0.5;
 }
 
@@ -357,17 +343,12 @@ body {
 
 <div class="body">
   <div id="content" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;"></div>
-<div class="toast" id="toast">Copied</div>
+  <div class="toast" id="toast">Copied</div>
 </div>
 
 <div class="resize-handle" id="resizeHandle"></div>
 <div class="footer">
-  <label class="mode-toggle">
-    <input type="checkbox" id="modeToggle"> Enable mode view
-  </label>
-  <a href="https://blakewonka.com" target="_blank">
-    blakewonka.com
-  </a>
+  <a href="https://github.com/blakewonka/Text-token-inspector" target="_blank">blakewonka.com</a>
 </div>
 
 <script>
@@ -391,39 +372,71 @@ function copyText(text) {
   }
 }
 
+const copyIcon = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+  <rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+  <path d="M1 8V2.5A1.5 1.5 0 0 1 2.5 1H8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+</svg>`;
+
+const chevronIcon = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+  <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+let modeViewEnabled = false;
+
 function showAllTokens(tokens) {
   const content = document.getElementById('content');
   content.innerHTML = `
     <div class="tokens-scroll" id="tokensList">
       ${tokens.map((data, i) => `
         <div class="token-section">
-          <div class="token-header">
-            <span class="token-layer">${esc(data.layer)}</span>
-            <span class="token-badge" data-v="${esc(data.token)}">${esc(data.token)}</span>
-          </div>
-          <div class="modes-grid">
-            ${data.modes.map(m => `
-              <div class="mrow">
-                <div class="mtag">${esc(m.name)}</div>
-                <div class="mval">${esc(m.value || '—')}</div>
-                <button class="copy-btn" data-v="${esc(m.value)}" title="Copy">
-                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                    <rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
-                    <path d="M1 8V2.5A1.5 1.5 0 0 1 2.5 1H8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                  </svg>
-                </button>
-              </div>`).join('')}
+          <div class="card-container">
+            <div class="token-id-row">
+              <span class="token-id-text"><span class="token-id-badge">${esc(data.token)}</span></span>
+              <button class="token-id-copy" data-v="${esc(data.token)}" title="Copy token">${copyIcon}</button>
+            </div>
+            <div class="card-header" data-idx="${i}">
+              <span class="token-layer">Translations</span>
+              <button class="chevron-btn" data-idx="${i}" title="Show language values">${chevronIcon}</button>
+            </div>
+            <div class="modes-grid" id="modes-${i}">
+              ${data.modes.map(m => `
+                <div class="mrow">
+                  <div class="mtag">${esc(m.name)}</div>
+                  <div class="mval">${esc(m.value || '—')}</div>
+                  <button class="copy-btn" data-v="${esc(m.value)}" title="Copy">${copyIcon}</button>
+                </div>`).join('')}
+            </div>
           </div>
         </div>`).join('')}
     </div>`;
 
-  const list = document.getElementById('tokensList');
+  content.querySelectorAll('.card-header').forEach(header => {
+    header.addEventListener('click', function() {
+      const idx = this.dataset.idx;
+      const grid = document.getElementById('modes-' + idx);
+      const btn = this.querySelector('.chevron-btn');
+      const isOpen = grid.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      this.classList.toggle('open', isOpen);
+    });
+  });
 
-  content.querySelectorAll('.token-badge').forEach(badge => {
-    badge.addEventListener('click', function() {
-      copyText(this.dataset.v);
-      this.classList.add('ok');
-      setTimeout(() => this.classList.remove('ok'), 900);
+  content.querySelectorAll('.token-id-row').forEach(row => {
+    const btn = row.querySelector('.token-id-copy');
+    row.addEventListener('click', () => {
+      copyText(btn.dataset.v);
+      btn.classList.add('ok');
+      setTimeout(() => btn.classList.remove('ok'), 900);
+      showToast('Copied');
+    });
+  });
+
+  content.querySelectorAll('.token-id-copy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      copyText(btn.dataset.v);
+      btn.classList.add('ok');
+      setTimeout(() => btn.classList.remove('ok'), 900);
       showToast('Copied');
     });
   });
@@ -437,26 +450,6 @@ function showAllTokens(tokens) {
       showToast('Copied');
     });
   });
-
-  content.querySelectorAll('.mrow').forEach(row => {
-    row.addEventListener('click', () => {
-      const el = row.querySelector('.mval');
-      const val = el && el.textContent ? el.textContent.trim() : null;
-      if (val && val !== '—') {
-        copyText(val);
-        showToast('Copied');
-      }
-    });
-  });
-
-  applyModeVisibility();
-}
-
-let modeViewEnabled = false;
-
-function applyModeVisibility() {
-  const grids = document.querySelectorAll('.modes-grid');
-  grids.forEach(g => { g.style.display = modeViewEnabled ? 'grid' : 'none'; });
 }
 
 let toastTimer;
@@ -479,6 +472,7 @@ window.onmessage = (event) => {
       showEmpty('No variable token found', 'The selected layer has no bound text variable');
       break;
     case 'ALL_TOKENS':
+      modeViewEnabled = false;
       showAllTokens(msg.payload);
       break;
     case 'NAVIGATE_FAIL':
@@ -488,11 +482,6 @@ window.onmessage = (event) => {
 };
 
 showEmpty('Select a text layer with a token', 'Works with text instances and frames');
-
-document.getElementById('modeToggle').addEventListener('change', function() {
-  modeViewEnabled = this.checked;
-  applyModeVisibility();
-});
 
 (function() {
   var handle = document.getElementById('resizeHandle');
